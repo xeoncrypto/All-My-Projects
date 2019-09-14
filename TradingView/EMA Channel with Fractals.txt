@@ -1,0 +1,77 @@
+//@version=4
+
+// @author Pascal Weber
+
+study(title = "EMA Channel w/ Fractals", shorttitle = "EMA Channel", overlay = true)
+
+
+// Input
+UseHA               = input(true, title="Use Heikin Ashi Candles")
+ShowEMAChannel      = input(true, title="Show EMA Channel")
+HighLowChannel      = input(34, minval=2, title="EMA H/L Channel Length")
+ShowEMARibbon       = input(true, title="Show Additional EMAs")
+AdditionalEMA1      = input(21, minval=2, title=" ⠀ ● First Additional EMA")
+AdditionalEMA2      = input(55, minval=2, title=" ⠀ ● Second Additional EMA")
+AdditionalEMA3      = input(100, minval=2, title=" ⠀ ● Third Additional EMA")
+ShowFractals        = input(true, title="Show Fractals")
+FilterBW            = input(false, title="Filter Out Bill Williams Fractals")
+ShowColoredCandles  = input(true, title="Color Candlesticks to Indicate Trend")
+
+
+// Heikin Ashi
+TickerID = UseHA ? heikinashi(syminfo.tickerid) : syminfo.tickerid
+
+o = security(TickerID, timeframe.period, open)
+h = security(TickerID, timeframe.period, high)
+l = security(TickerID, timeframe.period, low)
+c = security(TickerID, timeframe.period, close)
+
+
+// EMAs and EMA Channel
+EMA1            = ema(c, 21)
+EMA2            = ema(c, 55)
+EMA3            = ema(c, 100)
+ChannelClose    = ema(c, HighLowChannel)
+ChannelLow      = ema(l, HighLowChannel)
+ChannelHigh     = ema(h, HighLowChannel)
+
+
+// Plot EMA Channel
+LowerBound = plot(ShowEMAChannel ? ChannelLow : na, color=color.gray, linewidth=1, title="LowerBound", transp=50, editable=false)
+UpperBound = plot(ShowEMAChannel ? ChannelHigh : na, color=color.gray, linewidth=1, title="UpperBound", transp=50, editable=false)
+CloseBound = plot(ShowEMAChannel ? ChannelClose : na, color=color.red, linewidth=2, title="CloseBound", transp=0, editable=false)
+fill(LowerBound, UpperBound, color=color.gray, transp=90, title="ChannelFiller", editable=false)
+
+
+// Color Candlesticks
+CandlestickColor = c >= ChannelHigh ? color.green : c <= ChannelLow ? color.red : color.gray 
+barcolor(ShowColoredCandles ? CandlestickColor : na, title = "Candlestick Coloring", editable=false)
+
+
+// Plot additional EMA Ribbon
+plot(ShowEMARibbon ? EMA1 : na, color=color.green, linewidth=2, transp=20, editable=false)
+plot(ShowEMARibbon ? EMA2 : na, color=color.blue, linewidth=3, transp=20, editable=false)
+plot(ShowEMARibbon ? EMA3 : na, color=color.silver, linewidth=4, transp=50, editable=false)
+
+
+// Fractals
+IsRegularFractal(mode) =>
+    return = mode == 1 ? h[4] < h[3] and h[3] < h[2] and h[2] > h[1] and h[1] > h[0] : mode == -1 ? l[4] > l[3] and l[3] > l[2] and l[2] < l[1] and l[1] < l[0] : false
+
+IsBWFractal(mode) =>
+    return = mode == 1 ? h[4] < h[2] and h[3] <= h[2] and h[2] >= h[1] and h[2] > h[0] : mode == -1 ? l[4] > l[2] and l[3] >= l[2] and l[2] <= l[1] and l[2] < l[0] : false
+
+FilteredUpperFractal = FilterBW ? IsRegularFractal(1) : IsBWFractal(1)
+FilteredLowerFractal = FilterBW ? IsRegularFractal(-1) : IsBWFractal(-1)
+
+plotshape(ShowFractals ? FilteredUpperFractal : na, title="Filtered Upper Fractals", style=shape.triangledown, location=location.abovebar, color=color.red, offset=-2, size=size.tiny, editable=false)
+plotshape(ShowFractals ? FilteredLowerFractal : na, title="Filtered Lower Fractals", style=shape.triangleup, location=location.belowbar, color=color.lime, offset=-2, size=size.tiny, editable=false)
+
+
+// Alerts
+cond = (crossunder(close, ChannelHigh) and close > ChannelLow) or (crossover(close, ChannelLow) and close < ChannelHigh)
+
+alertcondition(condition=cond, title="[Entry] Inside Channel", message="[Entry] Inside Channel for Entering Market -> Check for Trendline Breakouts")
+
+
+

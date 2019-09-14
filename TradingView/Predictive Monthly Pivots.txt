@@ -1,0 +1,326 @@
+//@version=4
+
+// @author Pascal Weber
+
+study(title="Pivot Points Monthly Advanced", shorttitle="Pivots MN Adv", overlay=true)
+
+
+// Input
+ColorTheme         = input(defval="Dark", title = "Color Theme", options = ["Dark", "Light"])
+ShowPivotLabelsMN  = input(defval=true, title = "Show Monthly Pivot Labels", type=input.bool)
+ShowPivotPricesMN  = input(defval=false, title = "Show Monthly Pivot Prices", type=input.bool)
+ShowTargetZonesMN  = input(defval=true, title = "Show Monthly Target Zones", type=input.bool)
+PlotHistoryMN      = input(defval=false, title = "Plot Monthly History Pivots", type=input.bool)
+
+string ResolutionMN = "M"
+
+
+// Calculation
+IsNewBarMN() =>
+    change(time(ResolutionMN)) == 0 ? false : true
+
+openMN  = security(syminfo.tickerid, ResolutionMN, open[1])
+
+PPColorM1          = (ColorTheme == "Dark" ? color.white : color.black)
+ResColorM1         = (ColorTheme == "Dark" ? color.silver : color.gray)
+SupColorM1         = (ColorTheme == "Dark" ? color.silver : color.gray)
+MidColorM1         = (ColorTheme == "Dark" ? color.silver : color.gray)
+TargetZonesM1      = (ColorTheme == "Dark" ? color.silver : color.gray)
+
+PPColorMN          = openMN != openMN[1] ? na : PPColorM1
+ResColorMN         = openMN != openMN[1] ? na : ResColorM1
+SupColorMN         = openMN != openMN[1] ? na : SupColorM1
+MidColorMN         = openMN != openMN[1] ? na : MidColorM1
+TargetZonesMN      = openMN != openMN[1] ? na : TargetZonesM1
+
+int LineWidth    = 4
+int LineWidthSec = 2
+
+DaysPerMonth = (month == 1) ? 31 : (month == 2) ? 28 : (month == 3) ? 31 : (month == 4) ? 30 : (month == 5) ? 31 : (month == 6) ? 30 : (month == 7) ? 31 : (month == 8) ? 31 : (month == 9) ? 30 : (month == 10) ? 31 : (month == 11) ? 30 : (month == 12) ? 31 : 10
+
+MinutesPerMonth = DaysPerMonth * 24 * 60
+
+PP  = (high+low+close)/3.0
+
+R1  = 2*PP-low
+R2  = PP+(high-low)
+R3  = 2*PP + high - 2*low
+
+S1  = 2*PP-high
+S2  = PP-(high-low)
+S3  = 2*PP - 2*high + low
+
+M0  = 0.5*(S2+S3)
+M1  = 0.5*(S1+S2)
+M2  = 0.5*(PP+S1)
+M3  = 0.5*(PP+R1)
+M4  = 0.5*(R1+R2)
+M5  = 0.5*(R2+R3)
+
+PPSeriesMN = security(syminfo.tickerid, ResolutionMN, PP[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+R1SeriesMN = security(syminfo.tickerid, ResolutionMN, R1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+R2SeriesMN = security(syminfo.tickerid, ResolutionMN, R2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+R3SeriesMN = security(syminfo.tickerid, ResolutionMN, R3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+S1SeriesMN = security(syminfo.tickerid, ResolutionMN, S1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+S2SeriesMN = security(syminfo.tickerid, ResolutionMN, S2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+S3SeriesMN = security(syminfo.tickerid, ResolutionMN, S3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+M0SeriesMN = security(syminfo.tickerid, ResolutionMN, M0[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M1SeriesMN = security(syminfo.tickerid, ResolutionMN, M1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M2SeriesMN = security(syminfo.tickerid, ResolutionMN, M2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M3SeriesMN = security(syminfo.tickerid, ResolutionMN, M3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M4SeriesMN = security(syminfo.tickerid, ResolutionMN, M4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M5SeriesMN = security(syminfo.tickerid, ResolutionMN, M5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+
+// Plot History Lines
+PPPlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : PPSeriesMN) : na, color=PPColorMN, linewidth=LineWidth, editable=false, offset=1)
+
+R1PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : R1SeriesMN) : na, color=ResColorMN, linewidth=LineWidth, editable=false, offset=1)
+R2PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : R2SeriesMN) : na, color=ResColorMN, linewidth=LineWidth, editable=false, offset=1)
+R3PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : R3SeriesMN) : na, color=ResColorMN, linewidth=LineWidth, editable=false, offset=1)
+
+S1PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : S1SeriesMN) : na, color=SupColorMN, linewidth=LineWidth, editable=false, offset=1)
+S2PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : S2SeriesMN) : na, color=SupColorMN, linewidth=LineWidth, editable=false, offset=1)
+S3PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : S3SeriesMN) : na, color=SupColorMN, linewidth=LineWidth, editable=false, offset=1)
+
+M0PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : M0SeriesMN) : na, color=MidColorMN, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M1PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : M1SeriesMN) : na, color=MidColorMN, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M2PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : M2SeriesMN) : na, color=MidColorMN, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M3PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : M3SeriesMN) : na, color=MidColorMN, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M4PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : M4SeriesMN) : na, color=MidColorMN, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M5PlotMN = plot(PlotHistoryMN ? (barstate.isrealtime ? na : M5SeriesMN) : na, color=MidColorMN, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+
+
+// Plot Future Lines Dynamically
+PPSeriesFutureMN = security(syminfo.tickerid, ResolutionMN, PP[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+R1SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, R1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+R2SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, R2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+R3SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, R3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+S1SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, S1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+S2SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, S2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+S3SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, S3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+M0SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, M0[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M1SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, M1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M2SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, M2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M3SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, M3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M4SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, M4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M5SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, M5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+PPLineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, PPSeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, PPSeriesFutureMN, xloc=xloc.bar_time, color=PPColorM1, width=LineWidth, style=line.style_solid)
+
+R1LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R1SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, R1SeriesFutureMN, xloc=xloc.bar_time, color=ResColorM1, width=LineWidth, style=line.style_solid)
+R2LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R2SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, R2SeriesFutureMN, xloc=xloc.bar_time, color=ResColorM1, width=LineWidth, style=line.style_solid)
+R3LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R3SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, R3SeriesFutureMN, xloc=xloc.bar_time, color=ResColorM1, width=LineWidth, style=line.style_solid)
+
+S1LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S1SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, S1SeriesFutureMN, xloc=xloc.bar_time, color=SupColorM1, width=LineWidth, style=line.style_solid)
+S2LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S2SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, S2SeriesFutureMN, xloc=xloc.bar_time, color=SupColorM1, width=LineWidth, style=line.style_solid)
+S3LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S3SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, S3SeriesFutureMN, xloc=xloc.bar_time, color=SupColorM1, width=LineWidth, style=line.style_solid)
+
+M0LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M0SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, M0SeriesFutureMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+M1LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M1SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, M1SeriesFutureMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+M2LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M2SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, M2SeriesFutureMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+M3LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M3SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, M3SeriesFutureMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+M4LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M4SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, M4SeriesFutureMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+M5LineFutureMN = line.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M5SeriesFutureMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000 * 2, M5SeriesFutureMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+
+line.delete(PPLineFutureMN[1])
+line.delete(R1LineFutureMN[1])
+line.delete(R2LineFutureMN[1])
+line.delete(R3LineFutureMN[1])
+line.delete(S1LineFutureMN[1])
+line.delete(S2LineFutureMN[1])
+line.delete(S3LineFutureMN[1])
+line.delete(M0LineFutureMN[1])
+line.delete(M1LineFutureMN[1])
+line.delete(M2LineFutureMN[1])
+line.delete(M3LineFutureMN[1])
+line.delete(M4LineFutureMN[1])
+line.delete(M5LineFutureMN[1])
+
+
+// Extend Current Lines
+if (IsNewBarMN())
+    PPLineMN = line.new(time(ResolutionMN)[0], PPSeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, PPSeriesMN, xloc=xloc.bar_time, color=PPColorM1, width=LineWidth, style=line.style_solid)
+    
+    R1LineMN = line.new(time(ResolutionMN)[0], R1SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R1SeriesMN, xloc=xloc.bar_time, color=ResColorM1, width=LineWidth, style=line.style_solid)
+    R2LineMN = line.new(time(ResolutionMN)[0], R2SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R2SeriesMN, xloc=xloc.bar_time, color=ResColorM1, width=LineWidth, style=line.style_solid)
+    R3LineMN = line.new(time(ResolutionMN)[0], R3SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R3SeriesMN, xloc=xloc.bar_time, color=ResColorM1, width=LineWidth, style=line.style_solid)
+    
+    S1LineMN = line.new(time(ResolutionMN)[0], S1SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S1SeriesMN, xloc=xloc.bar_time, color=SupColorM1, width=LineWidth, style=line.style_solid)
+    S2LineMN = line.new(time(ResolutionMN)[0], S2SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S2SeriesMN, xloc=xloc.bar_time, color=SupColorM1, width=LineWidth, style=line.style_solid)
+    S3LineMN = line.new(time(ResolutionMN)[0], S3SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S3SeriesMN, xloc=xloc.bar_time, color=SupColorM1, width=LineWidth, style=line.style_solid)
+    
+    M0LineMN = line.new(time(ResolutionMN)[0], M0SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M0SeriesMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+    M1LineMN = line.new(time(ResolutionMN)[0], M1SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M1SeriesMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+    M2LineMN = line.new(time(ResolutionMN)[0], M2SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M2SeriesMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+    M3LineMN = line.new(time(ResolutionMN)[0], M3SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M3SeriesMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+    M4LineMN = line.new(time(ResolutionMN)[0], M4SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M4SeriesMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+    M5LineMN = line.new(time(ResolutionMN)[0], M5SeriesMN, time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, M5SeriesMN, xloc=xloc.bar_time, color=MidColorM1, width=LineWidthSec, style=line.style_dashed)
+    
+    line.delete(PPLineMN[1])
+    line.delete(R1LineMN[1])
+    line.delete(R2LineMN[1])
+    line.delete(R3LineMN[1])
+    line.delete(S1LineMN[1])
+    line.delete(S2LineMN[1])
+    line.delete(S3LineMN[1])
+    line.delete(M0LineMN[1])
+    line.delete(M1LineMN[1])
+    line.delete(M2LineMN[1])
+    line.delete(M3LineMN[1])
+    line.delete(M4LineMN[1])
+    line.delete(M5LineMN[1])
+
+
+// Labels
+if (ShowPivotLabelsMN and not ShowPivotPricesMN)
+    PPLabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, PPSeriesFutureMN, "P", xloc=xloc.bar_time, style=label.style_none, color=PPColorMN, textcolor=PPColorMN, size=size.normal)
+            
+    R1LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R1SeriesFutureMN, "R1", xloc=xloc.bar_time, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.normal)
+    R2LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R2SeriesFutureMN, "R2", xloc=xloc.bar_time, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.normal)
+    R3LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R3SeriesFutureMN, "R3", xloc=xloc.bar_time, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.normal)
+    
+    S1LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S1SeriesFutureMN, "S1", xloc=xloc.bar_time, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.normal)
+    S2LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S2SeriesFutureMN, "S2", xloc=xloc.bar_time, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.normal)
+    S3LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S3SeriesFutureMN, "S3", xloc=xloc.bar_time, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.normal)
+    
+    label.delete(PPLabelFutureMN[1])
+    
+    label.delete(R1LabelFutureMN[1])
+    label.delete(R2LabelFutureMN[1])
+    label.delete(R3LabelFutureMN[1])
+    
+    label.delete(S1LabelFutureMN[1])
+    label.delete(S2LabelFutureMN[1])
+    label.delete(S3LabelFutureMN[1])
+
+
+if (ShowPivotPricesMN and not ShowPivotLabelsMN)
+    PPLabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, PPSeriesFutureMN, tostring(round(PPSeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=PPColorMN, textcolor=PPColorMN, size=size.normal)
+    
+    R1LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R1SeriesFutureMN, tostring(round(R1SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.normal)
+    R2LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R2SeriesFutureMN, tostring(round(R2SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.normal)
+    R3LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R3SeriesFutureMN, tostring(round(R3SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.normal)
+    
+    S1LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S1SeriesFutureMN, tostring(round(S1SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.normal)
+    S2LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S2SeriesFutureMN, tostring(round(S2SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.normal)
+    S3LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S3SeriesFutureMN, tostring(round(S3SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.normal)
+    
+    label.delete(PPLabelFutureMN[1])
+    
+    label.delete(R1LabelFutureMN[1])
+    label.delete(R2LabelFutureMN[1])
+    label.delete(R3LabelFutureMN[1])
+    
+    label.delete(S1LabelFutureMN[1])
+    label.delete(S2LabelFutureMN[1])
+    label.delete(S3LabelFutureMN[1])
+
+
+if (ShowPivotPricesMN and ShowPivotLabelsMN)
+    PPLabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, PPSeriesFutureMN, "P " + tostring(round(PPSeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=PPColorMN, textcolor=PPColorMN, size=size.normal)
+    
+    R1LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R1SeriesFutureMN, "R1 " + tostring(round(R1SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.normal)
+    R2LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R2SeriesFutureMN, "R2 " + tostring(round(R2SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.normal)
+    R3LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, R3SeriesFutureMN, "R3 " + tostring(round(R3SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.normal)
+    
+    S1LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S1SeriesFutureMN, "S1 " + tostring(round(S1SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.normal)
+    S2LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S2SeriesFutureMN, "S2 " + tostring(round(S2SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.normal)
+    S3LabelFutureMN = label.new(time(ResolutionMN)[0] + MinutesPerMonth * 60 * 1000, S3SeriesFutureMN, "S3 " + tostring(round(S3SeriesFutureMN*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.normal)
+    
+    label.delete(PPLabelFutureMN[1])
+    
+    label.delete(R1LabelFutureMN[1])
+    label.delete(R2LabelFutureMN[1])
+    label.delete(R3LabelFutureMN[1])
+    
+    label.delete(S1LabelFutureMN[1])
+    label.delete(S2LabelFutureMN[1])
+    label.delete(S3LabelFutureMN[1])
+
+
+if (IsNewBarMN())
+    if (ShowPivotLabelsMN and not ShowPivotPricesMN)
+        PPLabel = label.new(time(ResolutionMN)[0], PPSeriesMN, "P", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=PPColorMN, textcolor=PPColorMN, size=size.large)
+        
+        R1Label = label.new(time(ResolutionMN)[0], R1SeriesMN, "R1", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.large)
+        R2Label = label.new(time(ResolutionMN)[0], R2SeriesMN, "R2", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.large)
+        R3Label = label.new(time(ResolutionMN)[0], R3SeriesMN, "R3", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.large)
+        
+        S1Label = label.new(time(ResolutionMN)[0], S1SeriesMN, "S1", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.large)
+        S2Label = label.new(time(ResolutionMN)[0], S2SeriesMN, "S2", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.large)
+        S3Label = label.new(time(ResolutionMN)[0], S3SeriesMN, "S3", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.large)
+        
+        if (not PlotHistoryMN)
+            label.delete(PPLabel[1])
+            
+            label.delete(R1Label[1])
+            label.delete(R2Label[1])
+            label.delete(R3Label[1])
+            
+            label.delete(S1Label[1])
+            label.delete(S2Label[1])
+            label.delete(S3Label[1])
+    
+    
+    if (ShowPivotPricesMN and not ShowPivotLabelsMN)
+        PPLabel = label.new(time(ResolutionMN)[0], PPSeriesMN, tostring(round(PPSeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=PPColorMN, textcolor=PPColorMN, size=size.large)
+        
+        R1Label = label.new(time(ResolutionMN)[0], R1SeriesMN, tostring(round(R1SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.large)
+        R2Label = label.new(time(ResolutionMN)[0], R2SeriesMN, tostring(round(R2SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.large)
+        R3Label = label.new(time(ResolutionMN)[0], R3SeriesMN, tostring(round(R3SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.large)
+        
+        S1Label = label.new(time(ResolutionMN)[0], S1SeriesMN, tostring(round(S1SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.large)
+        S2Label = label.new(time(ResolutionMN)[0], S2SeriesMN, tostring(round(S2SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.large)
+        S3Label = label.new(time(ResolutionMN)[0], S3SeriesMN, tostring(round(S3SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.large)
+        
+        if (not PlotHistoryMN)
+            label.delete(PPLabel[1])
+            
+            label.delete(R1Label[1])
+            label.delete(R2Label[1])
+            label.delete(R3Label[1])
+            
+            label.delete(S1Label[1])
+            label.delete(S2Label[1])
+            label.delete(S3Label[1])
+    
+    
+    if (ShowPivotPricesMN and ShowPivotLabelsMN)
+        PPLabel = label.new(time(ResolutionMN)[0], PPSeriesMN, "P " + tostring(round(PPSeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=PPColorMN, textcolor=PPColorMN, size=size.large)
+        
+        R1Label = label.new(time(ResolutionMN)[0], R1SeriesMN, "R1 " + tostring(round(R1SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.large)
+        R2Label = label.new(time(ResolutionMN)[0], R2SeriesMN, "R2 " + tostring(round(R2SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.large)
+        R3Label = label.new(time(ResolutionMN)[0], R3SeriesMN, "R3 " + tostring(round(R3SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorMN, textcolor=ResColorMN, size=size.large)
+        
+        S1Label = label.new(time(ResolutionMN)[0], S1SeriesMN, "S1 " + tostring(round(S1SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.large)
+        S2Label = label.new(time(ResolutionMN)[0], S2SeriesMN, "S2 " + tostring(round(S2SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.large)
+        S3Label = label.new(time(ResolutionMN)[0], S3SeriesMN, "S3 " + tostring(round(S3SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorMN, textcolor=SupColorMN, size=size.large)
+        
+        if (not PlotHistoryMN)
+            label.delete(PPLabel[1])
+            
+            label.delete(R1Label[1])
+            label.delete(R2Label[1])
+            label.delete(R3Label[1])
+            
+            label.delete(S1Label[1])
+            label.delete(S2Label[1])
+            label.delete(S3Label[1])
+
+
+// Targetzones & Buy/Sell Zones
+fill(R2PlotMN, M4PlotMN, color=TargetZonesMN, editable=false, transp=ShowTargetZonesMN ? 90 : 100)
+fill(S2PlotMN, M1PlotMN, color=TargetZonesMN, editable=false, transp=ShowTargetZonesMN ? 90 : 100)
+
+
+// Alerts
+alertcondition(condition=crossunder(low, M1SeriesMN), title="Take Profit Zone for Monthly Shorts", message="[Take Profit] Reached the Monthly Take Profit Zone for Short Positions")
+alertcondition(condition=crossover(high, M4SeriesMN), title="Take Profit Zone for Monthly Longs", message="[Take Profit] Reached the Monthly Take Profit Zone for Long Positions")
+
