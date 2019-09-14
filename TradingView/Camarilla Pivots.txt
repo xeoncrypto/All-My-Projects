@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //@version=4
 
 // @author Pascal Weber
@@ -411,3 +412,418 @@ alertcondition(condition=CondDailyReversal, title="Daily Reversal Level Reached"
 
 
 
+=======
+//@version=4
+
+// @author Pascal Weber
+
+study(title="Advanced Camarilla Breakout / Reversal", shorttitle="Adv Cam Bre/Rev", overlay=true)
+
+
+// Input
+ShowBreakoutMN  = input(defval=true, title = "Show Monthly Camarilla Breakout Levels", type=input.bool)
+ShowReversalMN  = input(defval=true, title = "Show Monthly Camarilla Reversal Levels", type=input.bool)
+ShowBreakoutWK  = input(defval=false, title = "Show Weekly Camarilla Breakout Levels", type=input.bool)
+ShowReversalWK  = input(defval=false, title = "Show Weekly Camarilla Reversal Levels", type=input.bool)
+ShowBreakoutD   = input(defval=false, title = "Show Daily Camarilla Breakout Levels", type=input.bool)
+ShowReversalD   = input(defval=false, title = "Show Daily Camarilla Reversal Levels", type=input.bool)
+ShowLabels    = input(defval=true, title = "Show Camarilla-Level Labels", type=input.bool)
+ShowPrices    = input(defval=false, title = "Show Camarilla-Level Prices", type=input.bool)
+
+string ResolutionMN = "M"
+string ResolutionWK = "W"
+string ResolutionD  = "D"
+
+int ResolutionMinutesMN = 43200
+int ResolutionMinutesWK = 10080
+int ResolutionMinutesD = 1440
+
+
+// Calculation
+IsNewBarMN() =>
+    change(time(ResolutionMN)) == 0 ? false : true
+
+IsNewBarWK() =>
+    change(time(ResolutionWK)) == 0 ? false : true
+
+IsNewBarD() =>
+    change(time(ResolutionD)) == 0 ? false : true
+
+openMN  = security(syminfo.tickerid, ResolutionMN, open[1])
+openWK  = security(syminfo.tickerid, ResolutionWK, open[1])
+openD   = security(syminfo.tickerid, ResolutionD,  open[1])
+
+H4ColorMN = openMN != openMN[1] ? na : #7600e6
+H5ColorMN = openMN != openMN[1] ? na : #e60070
+H6ColorMN = openMN != openMN[1] ? na : #e60070
+L4ColorMN = openMN != openMN[1] ? na : #7600e6
+L5ColorMN = openMN != openMN[1] ? na : #00e6e2
+L6ColorMN = openMN != openMN[1] ? na : #00e6e2
+
+H4ColorWK = openWK != openWK[1] ? na : #7600e6
+H5ColorWK = openWK != openWK[1] ? na : #e60070
+H6ColorWK = openWK != openWK[1] ? na : #e60070
+L4ColorWK = openWK != openWK[1] ? na : #7600e6
+L5ColorWK = openWK != openWK[1] ? na : #00e6e2
+L6ColorWK = openWK != openWK[1] ? na : #00e6e2
+
+H4ColorD  = openD != openD[1] ? na : #7600e6
+H5ColorD  = openD != openD[1] ? na : #e60070
+H6ColorD  = openD != openD[1] ? na : #e60070
+L4ColorD  = openD != openD[1] ? na : #7600e6
+L5ColorD  = openD != openD[1] ? na : #00e6e2
+L6ColorD  = openD != openD[1] ? na : #00e6e2
+
+
+H4 = close + (high - low) * 1.1 / 2.0   // Breakout for Long
+H5 = (high/low) * close                 // Reversal 1
+H6 = H5 + 1.168 * (H5 - H4)             // Reversal 2
+
+L4 = close - (high - low) * 1.1 / 2.0   // Breakout for Short
+L5 = close - (H5 - close)               // Reversal 1
+L6 = close - (H6 - close)               // Reversal 2
+   
+   
+// Plot History Levels
+H4SeriesMN = security(syminfo.tickerid, ResolutionMN, H4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+H5SeriesMN = security(syminfo.tickerid, ResolutionMN, H5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+H6SeriesMN = security(syminfo.tickerid, ResolutionMN, H6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+L4SeriesMN = security(syminfo.tickerid, ResolutionMN, L4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+L5SeriesMN = security(syminfo.tickerid, ResolutionMN, L5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+L6SeriesMN = security(syminfo.tickerid, ResolutionMN, L6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+H4PlotMN = plot(ShowBreakoutMN ? barstate.isrealtime ? na : H4SeriesMN : na, color=H4ColorMN, linewidth=4, editable=false, offset=1)
+H5PlotMN = plot(ShowReversalMN ? barstate.isrealtime ? na : H5SeriesMN : na, color=H5ColorMN, linewidth=4, editable=false, offset=1)
+H6PlotMN = plot(ShowReversalMN ? barstate.isrealtime ? na : H6SeriesMN : na, color=H6ColorMN, linewidth=4, editable=false, offset=1)
+
+L4PlotMN = plot(ShowBreakoutMN ? barstate.isrealtime ? na : L4SeriesMN : na, color=L4ColorMN, linewidth=4, editable=false, offset=1)
+L5PlotMN = plot(ShowReversalMN ? barstate.isrealtime ? na : L5SeriesMN : na, color=L5ColorMN, linewidth=4, editable=false, offset=1)
+L6PlotMN = plot(ShowReversalMN ? barstate.isrealtime ? na : L6SeriesMN : na, color=L6ColorMN, linewidth=4, editable=false, offset=1)
+
+H4SeriesWK = security(syminfo.tickerid, ResolutionWK, H4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+H5SeriesWK = security(syminfo.tickerid, ResolutionWK, H5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+H6SeriesWK = security(syminfo.tickerid, ResolutionWK, H6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+L4SeriesWK = security(syminfo.tickerid, ResolutionWK, L4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+L5SeriesWK = security(syminfo.tickerid, ResolutionWK, L5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+L6SeriesWK = security(syminfo.tickerid, ResolutionWK, L6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+H4PlotWK = plot(ShowBreakoutWK ? barstate.isrealtime ? na : H4SeriesWK : na, color=H4ColorWK, linewidth=2, editable=false, offset=1)
+H5PlotWK = plot(ShowReversalWK ? barstate.isrealtime ? na : H5SeriesWK : na, color=H5ColorWK, linewidth=2, editable=false, offset=1)
+H6PlotWK = plot(ShowReversalWK ? barstate.isrealtime ? na : H6SeriesWK : na, color=H6ColorWK, linewidth=2, editable=false, offset=1)
+
+L4PlotWK = plot(ShowBreakoutWK ? barstate.isrealtime ? na : L4SeriesWK : na, color=L4ColorWK, linewidth=2, editable=false, offset=1)
+L5PlotWK = plot(ShowReversalWK ? barstate.isrealtime ? na : L5SeriesWK : na, color=L5ColorWK, linewidth=2, editable=false, offset=1)
+L6PlotWK = plot(ShowReversalWK ? barstate.isrealtime ? na : L6SeriesWK : na, color=L6ColorWK, linewidth=2, editable=false, offset=1)
+
+H4SeriesD  = security(syminfo.tickerid, ResolutionD , H4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+H5SeriesD  = security(syminfo.tickerid, ResolutionD , H5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+H6SeriesD  = security(syminfo.tickerid, ResolutionD , H6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+L4SeriesD  = security(syminfo.tickerid, ResolutionD , L4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+L5SeriesD  = security(syminfo.tickerid, ResolutionD , L5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+L6SeriesD  = security(syminfo.tickerid, ResolutionD , L6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+H4PlotD  = plot(ShowBreakoutD  ? barstate.isrealtime ? na : H4SeriesD  : na, color=H4ColorD , linewidth=1, editable=false, offset=1)
+H5PlotD  = plot(ShowReversalD  ? barstate.isrealtime ? na : H5SeriesD  : na, color=H5ColorD , linewidth=1, editable=false, offset=1)
+H6PlotD  = plot(ShowReversalD  ? barstate.isrealtime ? na : H6SeriesD  : na, color=H6ColorD , linewidth=1, editable=false, offset=1)
+
+L4PlotD  = plot(ShowBreakoutD  ? barstate.isrealtime ? na : L4SeriesD  : na, color=L4ColorD , linewidth=1, editable=false, offset=1)
+L5PlotD  = plot(ShowReversalD  ? barstate.isrealtime ? na : L5SeriesD  : na, color=L5ColorD , linewidth=1, editable=false, offset=1)
+L6PlotD  = plot(ShowReversalD  ? barstate.isrealtime ? na : L6SeriesD  : na, color=L6ColorD , linewidth=1, editable=false, offset=1)
+
+
+// Plot Future Levels Dynamically
+H4SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, H4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+H5SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, H5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+H6SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, H6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+L4SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, L4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+L5SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, L5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+L6SeriesFutureMN = security(syminfo.tickerid, ResolutionMN, L6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+H4SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, H4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+H5SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, H5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+H6SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, H6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+L4SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, L4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+L5SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, L5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+L6SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, L6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+H4SeriesFutureD  = security(syminfo.tickerid, ResolutionD , H4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+H5SeriesFutureD  = security(syminfo.tickerid, ResolutionD , H5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+H6SeriesFutureD  = security(syminfo.tickerid, ResolutionD , H6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+L4SeriesFutureD  = security(syminfo.tickerid, ResolutionD , L4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+L5SeriesFutureD  = security(syminfo.tickerid, ResolutionD , L5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+L6SeriesFutureD  = security(syminfo.tickerid, ResolutionD , L6[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+    
+if(ShowBreakoutMN)
+    H4LineFutureMN = line.new(time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, H4SeriesFutureMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000 * 2, H4SeriesFutureMN, xloc=xloc.bar_time, color=H4ColorMN, width=4, style=line.style_solid)
+    L4LineFutureMN = line.new(time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, L4SeriesFutureMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000 * 2, L4SeriesFutureMN, xloc=xloc.bar_time, color=L4ColorMN, width=4, style=line.style_solid)
+    
+    line.delete(H4LineFutureMN[1])
+    line.delete(L4LineFutureMN[1])
+    
+if(ShowReversalMN)
+    H5LineFutureMN = line.new(time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, H5SeriesFutureMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000 * 2, H5SeriesFutureMN, xloc=xloc.bar_time, color=H5ColorMN, width=4, style=line.style_solid)
+    H6LineFutureMN = line.new(time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, H6SeriesFutureMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000 * 2, H6SeriesFutureMN, xloc=xloc.bar_time, color=H6ColorMN, width=4, style=line.style_solid)
+    
+    L5LineFutureMN = line.new(time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, L5SeriesFutureMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000 * 2, L5SeriesFutureMN, xloc=xloc.bar_time, color=L5ColorMN, width=4, style=line.style_solid)
+    L6LineFutureMN = line.new(time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, L6SeriesFutureMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000 * 2, L6SeriesFutureMN, xloc=xloc.bar_time, color=L6ColorMN, width=4, style=line.style_solid)
+
+    line.delete(H5LineFutureMN[1])
+    line.delete(H6LineFutureMN[1])
+    
+    line.delete(L5LineFutureMN[1])
+    line.delete(L6LineFutureMN[1])
+
+if(ShowBreakoutWK)
+    H4LineFutureWK = line.new(time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, H4SeriesFutureWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000 * 2, H4SeriesFutureWK, xloc=xloc.bar_time, color=H4ColorWK, width=2, style=line.style_solid)
+    L4LineFutureWK = line.new(time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, L4SeriesFutureWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000 * 2, L4SeriesFutureWK, xloc=xloc.bar_time, color=L4ColorWK, width=2, style=line.style_solid)
+    
+    line.delete(H4LineFutureWK[1])
+    line.delete(L4LineFutureWK[1])
+    
+if(ShowReversalWK)
+    H5LineFutureWK = line.new(time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, H5SeriesFutureWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000 * 2, H5SeriesFutureWK, xloc=xloc.bar_time, color=H5ColorWK, width=2, style=line.style_solid)
+    H6LineFutureWK = line.new(time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, H6SeriesFutureWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000 * 2, H6SeriesFutureWK, xloc=xloc.bar_time, color=H6ColorWK, width=2, style=line.style_solid)
+    
+    L5LineFutureWK = line.new(time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, L5SeriesFutureWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000 * 2, L5SeriesFutureWK, xloc=xloc.bar_time, color=L5ColorWK, width=2, style=line.style_solid)
+    L6LineFutureWK = line.new(time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, L6SeriesFutureWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000 * 2, L6SeriesFutureWK, xloc=xloc.bar_time, color=L6ColorWK, width=2, style=line.style_solid)
+
+    line.delete(H5LineFutureWK[1])
+    line.delete(H6LineFutureWK[1])
+    
+    line.delete(L5LineFutureWK[1])
+    line.delete(L6LineFutureWK[1])
+
+if(ShowBreakoutD )
+    H4LineFutureD  = line.new(time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, H4SeriesFutureD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000 * 2, H4SeriesFutureD , xloc=xloc.bar_time, color=H4ColorD , width=1, style=line.style_solid)
+    L4LineFutureD  = line.new(time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, L4SeriesFutureD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000 * 2, L4SeriesFutureD , xloc=xloc.bar_time, color=L4ColorD , width=1, style=line.style_solid)
+    
+    line.delete(H4LineFutureD [1])
+    line.delete(L4LineFutureD [1])
+    
+if(ShowReversalD )
+    H5LineFutureD  = line.new(time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, H5SeriesFutureD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000 * 2, H5SeriesFutureD , xloc=xloc.bar_time, color=H5ColorD , width=1, style=line.style_solid)
+    H6LineFutureD  = line.new(time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, H6SeriesFutureD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000 * 2, H6SeriesFutureD , xloc=xloc.bar_time, color=H6ColorD , width=1, style=line.style_solid)
+    
+    L5LineFutureD  = line.new(time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, L5SeriesFutureD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000 * 2, L5SeriesFutureD , xloc=xloc.bar_time, color=L5ColorD , width=1, style=line.style_solid)
+    L6LineFutureD  = line.new(time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, L6SeriesFutureD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000 * 2, L6SeriesFutureD , xloc=xloc.bar_time, color=L6ColorD , width=1, style=line.style_solid)
+
+    line.delete(H5LineFutureD [1])
+    line.delete(H6LineFutureD [1])
+    
+    line.delete(L5LineFutureD [1])
+    line.delete(L6LineFutureD [1])
+
+
+// Extend Current Levels
+if (IsNewBarMN())
+    if(ShowBreakoutMN)
+        H4LineMN = line.new(time(ResolutionMN)[0], H4SeriesMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, H4SeriesMN, xloc=xloc.bar_time, color=H4ColorMN, width=4, style=line.style_solid)
+        L4LineMN = line.new(time(ResolutionMN)[0], L4SeriesMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, L4SeriesMN, xloc=xloc.bar_time, color=L4ColorMN, width=4, style=line.style_solid)
+        
+        line.delete(H4LineMN[1])
+        line.delete(L4LineMN[1])
+        
+    if(ShowReversalMN)
+        H5LineMN = line.new(time(ResolutionMN)[0], H5SeriesMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, H5SeriesMN, xloc=xloc.bar_time, color=H5ColorMN, width=4, style=line.style_solid)
+        H6LineMN = line.new(time(ResolutionMN)[0], H6SeriesMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, H6SeriesMN, xloc=xloc.bar_time, color=H6ColorMN, width=4, style=line.style_solid)
+        
+        L5LineMN = line.new(time(ResolutionMN)[0], L5SeriesMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, L5SeriesMN, xloc=xloc.bar_time, color=L5ColorMN, width=4, style=line.style_solid)
+        L6LineMN = line.new(time(ResolutionMN)[0], L6SeriesMN, time(ResolutionMN)[0] + ResolutionMinutesMN * 60 * 1000, L6SeriesMN, xloc=xloc.bar_time, color=L6ColorMN, width=4, style=line.style_solid)
+        
+        line.delete(H5LineMN[1])
+        line.delete(H6LineMN[1])
+        
+        line.delete(L5LineMN[1])
+        line.delete(L6LineMN[1])
+
+if (IsNewBarWK())
+    if(ShowBreakoutWK)
+        H4LineWK = line.new(time(ResolutionWK)[0], H4SeriesWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, H4SeriesWK, xloc=xloc.bar_time, color=H4ColorWK, width=2, style=line.style_solid)
+        L4LineWK = line.new(time(ResolutionWK)[0], L4SeriesWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, L4SeriesWK, xloc=xloc.bar_time, color=L4ColorWK, width=2, style=line.style_solid)
+        
+        line.delete(H4LineWK[1])
+        line.delete(L4LineWK[1])
+        
+    if(ShowReversalWK)
+        H5LineWK = line.new(time(ResolutionWK)[0], H5SeriesWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, H5SeriesWK, xloc=xloc.bar_time, color=H5ColorWK, width=2, style=line.style_solid)
+        H6LineWK = line.new(time(ResolutionWK)[0], H6SeriesWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, H6SeriesWK, xloc=xloc.bar_time, color=H6ColorWK, width=2, style=line.style_solid)
+        
+        L5LineWK = line.new(time(ResolutionWK)[0], L5SeriesWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, L5SeriesWK, xloc=xloc.bar_time, color=L5ColorWK, width=2, style=line.style_solid)
+        L6LineWK = line.new(time(ResolutionWK)[0], L6SeriesWK, time(ResolutionWK)[0] + ResolutionMinutesWK * 60 * 1000, L6SeriesWK, xloc=xloc.bar_time, color=L6ColorWK, width=2, style=line.style_solid)
+        
+        line.delete(H5LineWK[1])
+        line.delete(H6LineWK[1])
+        
+        line.delete(L5LineWK[1])
+        line.delete(L6LineWK[1])
+
+if (IsNewBarD ())
+    if(ShowBreakoutD )
+        H4LineD  = line.new(time(ResolutionD )[0], H4SeriesD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, H4SeriesD , xloc=xloc.bar_time, color=H4ColorD , width=1, style=line.style_solid)
+        L4LineD  = line.new(time(ResolutionD )[0], L4SeriesD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, L4SeriesD , xloc=xloc.bar_time, color=L4ColorD , width=1, style=line.style_solid)
+        
+        line.delete(H4LineD [1])
+        line.delete(L4LineD [1])
+        
+    if(ShowReversalD )
+        H5LineD  = line.new(time(ResolutionD )[0], H5SeriesD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, H5SeriesD , xloc=xloc.bar_time, color=H5ColorD , width=1, style=line.style_solid)
+        H6LineD  = line.new(time(ResolutionD )[0], H6SeriesD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, H6SeriesD , xloc=xloc.bar_time, color=H6ColorD , width=1, style=line.style_solid)
+        
+        L5LineD  = line.new(time(ResolutionD )[0], L5SeriesD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, L5SeriesD , xloc=xloc.bar_time, color=L5ColorD , width=1, style=line.style_solid)
+        L6LineD  = line.new(time(ResolutionD )[0], L6SeriesD , time(ResolutionD )[0] + ResolutionMinutesD  * 60 * 1000, L6SeriesD , xloc=xloc.bar_time, color=L6ColorD , width=1, style=line.style_solid)
+        
+        line.delete(H5LineD [1])
+        line.delete(H6LineD [1])
+        
+        line.delete(L5LineD [1])
+        line.delete(L6LineD [1])
+
+
+// Labels
+if (IsNewBarMN())
+    if (ShowLabels and not ShowPrices)
+        if(ShowBreakoutMN)
+            H4Label = label.new(time(ResolutionMN)[0], H4SeriesMN, "H4 Bre", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H4ColorMN, textcolor=H4ColorMN, size=size.large)
+            L4Label = label.new(time(ResolutionMN)[0], L4SeriesMN, "L4 Bre", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L4ColorMN, textcolor=L4ColorMN, size=size.large)
+        
+        if(ShowReversalMN)
+            H5Label = label.new(time(ResolutionMN)[0], H5SeriesMN, "H5 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H5ColorMN, textcolor=H5ColorMN, size=size.large)
+            H6Label = label.new(time(ResolutionMN)[0], H6SeriesMN, "H6 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H6ColorMN, textcolor=H6ColorMN, size=size.large)
+            
+            L5Label = label.new(time(ResolutionMN)[0], L5SeriesMN, "L5 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L5ColorMN, textcolor=L5ColorMN, size=size.large)
+            L6Label = label.new(time(ResolutionMN)[0], L6SeriesMN, "L6 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L6ColorMN, textcolor=L6ColorMN, size=size.large)
+
+    if (ShowPrices and not ShowLabels)
+        if(ShowBreakoutMN)
+            H4Label = label.new(time(ResolutionMN)[0], H4SeriesMN, tostring(round(H4SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H4ColorMN, textcolor=H4ColorMN, size=size.large)
+            L4Label = label.new(time(ResolutionMN)[0], L4SeriesMN, tostring(round(L4SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L4ColorMN, textcolor=L4ColorMN, size=size.large)
+        
+        if(ShowReversalMN)
+            H5Label = label.new(time(ResolutionMN)[0], H5SeriesMN, tostring(round(H5SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H5ColorMN, textcolor=H5ColorMN, size=size.large)
+            H6Label = label.new(time(ResolutionMN)[0], H6SeriesMN, tostring(round(H6SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H6ColorMN, textcolor=H6ColorMN, size=size.large)
+            
+            L5Label = label.new(time(ResolutionMN)[0], L5SeriesMN, tostring(round(L5SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L5ColorMN, textcolor=L5ColorMN, size=size.large)
+            L6Label = label.new(time(ResolutionMN)[0], L6SeriesMN, tostring(round(L6SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L6ColorMN, textcolor=L6ColorMN, size=size.large)
+
+    if (ShowPrices and ShowLabels)
+        if(ShowBreakoutMN)
+            H4Label = label.new(time(ResolutionMN)[0], H4SeriesMN, "H4 Bre " + tostring(round(H4SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H4ColorMN, textcolor=H4ColorMN, size=size.large)
+            L4Label = label.new(time(ResolutionMN)[0], L4SeriesMN, "L4 Bre " + tostring(round(L4SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L4ColorMN, textcolor=L4ColorMN, size=size.large)
+        
+        if(ShowReversalMN)
+            H5Label = label.new(time(ResolutionMN)[0], H5SeriesMN, "H5 Rev " + tostring(round(H5SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H5ColorMN, textcolor=H5ColorMN, size=size.large)
+            H6Label = label.new(time(ResolutionMN)[0], H6SeriesMN, "H6 Rev " + tostring(round(H6SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H6ColorMN, textcolor=H6ColorMN, size=size.large)
+            
+            L5Label = label.new(time(ResolutionMN)[0], L5SeriesMN, "L5 Rev " + tostring(round(L5SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L5ColorMN, textcolor=L5ColorMN, size=size.large)
+            L6Label = label.new(time(ResolutionMN)[0], L6SeriesMN, "L6 Rev " + tostring(round(L6SeriesMN*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L6ColorMN, textcolor=L6ColorMN, size=size.large)
+
+if (IsNewBarWK())
+    if (ShowLabels and not ShowPrices)
+        if(ShowBreakoutWK)
+            H4Label = label.new(time(ResolutionWK)[0], H4SeriesWK, "H4 Bre", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H4ColorWK, textcolor=H4ColorWK, size=size.normal)
+            L4Label = label.new(time(ResolutionWK)[0], L4SeriesWK, "L4 Bre", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L4ColorWK, textcolor=L4ColorWK, size=size.normal)
+        
+        if(ShowReversalWK)
+            H5Label = label.new(time(ResolutionWK)[0], H5SeriesWK, "H5 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H5ColorWK, textcolor=H5ColorWK, size=size.normal)
+            H6Label = label.new(time(ResolutionWK)[0], H6SeriesWK, "H6 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H6ColorWK, textcolor=H6ColorWK, size=size.normal)
+            
+            L5Label = label.new(time(ResolutionWK)[0], L5SeriesWK, "L5 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L5ColorWK, textcolor=L5ColorWK, size=size.normal)
+            L6Label = label.new(time(ResolutionWK)[0], L6SeriesWK, "L6 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L6ColorWK, textcolor=L6ColorWK, size=size.normal)
+
+    if (ShowPrices and not ShowLabels)
+        if(ShowBreakoutWK)
+            H4Label = label.new(time(ResolutionWK)[0], H4SeriesWK, tostring(round(H4SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H4ColorWK, textcolor=H4ColorWK, size=size.normal)
+            L4Label = label.new(time(ResolutionWK)[0], L4SeriesWK, tostring(round(L4SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L4ColorWK, textcolor=L4ColorWK, size=size.normal)
+        
+        if(ShowReversalWK)
+            H5Label = label.new(time(ResolutionWK)[0], H5SeriesWK, tostring(round(H5SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H5ColorWK, textcolor=H5ColorWK, size=size.normal)
+            H6Label = label.new(time(ResolutionWK)[0], H6SeriesWK, tostring(round(H6SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H6ColorWK, textcolor=H6ColorWK, size=size.normal)
+            
+            L5Label = label.new(time(ResolutionWK)[0], L5SeriesWK, tostring(round(L5SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L5ColorWK, textcolor=L5ColorWK, size=size.normal)
+            L6Label = label.new(time(ResolutionWK)[0], L6SeriesWK, tostring(round(L6SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L6ColorWK, textcolor=L6ColorWK, size=size.normal)
+
+    if (ShowPrices and ShowLabels)
+        if(ShowBreakoutWK)
+            H4Label = label.new(time(ResolutionWK)[0], H4SeriesWK, "H4 Bre " + tostring(round(H4SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H4ColorWK, textcolor=H4ColorWK, size=size.normal)
+            L4Label = label.new(time(ResolutionWK)[0], L4SeriesWK, "L4 Bre " + tostring(round(L4SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L4ColorWK, textcolor=L4ColorWK, size=size.normal)
+        
+        if(ShowReversalWK)
+            H5Label = label.new(time(ResolutionWK)[0], H5SeriesWK, "H5 Rev " + tostring(round(H5SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H5ColorWK, textcolor=H5ColorWK, size=size.normal)
+            H6Label = label.new(time(ResolutionWK)[0], H6SeriesWK, "H6 Rev " + tostring(round(H6SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H6ColorWK, textcolor=H6ColorWK, size=size.normal)
+            
+            L5Label = label.new(time(ResolutionWK)[0], L5SeriesWK, "L5 Rev " + tostring(round(L5SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L5ColorWK, textcolor=L5ColorWK, size=size.normal)
+            L6Label = label.new(time(ResolutionWK)[0], L6SeriesWK, "L6 Rev " + tostring(round(L6SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L6ColorWK, textcolor=L6ColorWK, size=size.normal)
+
+if (IsNewBarD())
+    if (ShowLabels and not ShowPrices)
+        if(ShowBreakoutD )
+            H4Label = label.new(time(ResolutionD )[0], H4SeriesD , "H4 Bre", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H4ColorD , textcolor=H4ColorD , size=size.small)
+            L4Label = label.new(time(ResolutionD )[0], L4SeriesD , "L4 Bre", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L4ColorD , textcolor=L4ColorD , size=size.small)
+        
+        if(ShowReversalD )
+            H5Label = label.new(time(ResolutionD )[0], H5SeriesD , "H5 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H5ColorD , textcolor=H5ColorD , size=size.small)
+            H6Label = label.new(time(ResolutionD )[0], H6SeriesD , "H6 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H6ColorD , textcolor=H6ColorD , size=size.small)
+            
+            L5Label = label.new(time(ResolutionD )[0], L5SeriesD , "L5 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L5ColorD , textcolor=L5ColorD , size=size.small)
+            L6Label = label.new(time(ResolutionD )[0], L6SeriesD , "L6 Rev", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L6ColorD , textcolor=L6ColorD , size=size.small)
+
+    if (ShowPrices and not ShowLabels)
+        if(ShowBreakoutD )
+            H4Label = label.new(time(ResolutionD )[0], H4SeriesD , tostring(round(H4SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H4ColorD , textcolor=H4ColorD , size=size.small)
+            L4Label = label.new(time(ResolutionD )[0], L4SeriesD , tostring(round(L4SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L4ColorD , textcolor=L4ColorD , size=size.small)
+        
+        if(ShowReversalD )
+            H5Label = label.new(time(ResolutionD )[0], H5SeriesD , tostring(round(H5SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H5ColorD , textcolor=H5ColorD , size=size.small)
+            H6Label = label.new(time(ResolutionD )[0], H6SeriesD , tostring(round(H6SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H6ColorD , textcolor=H6ColorD , size=size.small)
+            
+            L5Label = label.new(time(ResolutionD )[0], L5SeriesD , tostring(round(L5SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L5ColorD , textcolor=L5ColorD , size=size.small)
+            L6Label = label.new(time(ResolutionD )[0], L6SeriesD , tostring(round(L6SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L6ColorD , textcolor=L6ColorD , size=size.small)
+
+    if (ShowPrices and ShowLabels)
+        if(ShowBreakoutD )
+            H4Label = label.new(time(ResolutionD )[0], H4SeriesD , "H4 Bre " + tostring(round(H4SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H4ColorD , textcolor=H4ColorD , size=size.small)
+            L4Label = label.new(time(ResolutionD )[0], L4SeriesD , "L4 Bre " + tostring(round(L4SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L4ColorD , textcolor=L4ColorD , size=size.small)
+        
+        if(ShowReversalD )
+            H5Label = label.new(time(ResolutionD )[0], H5SeriesD , "H5 Rev " + tostring(round(H5SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H5ColorD , textcolor=H5ColorD , size=size.small)
+            H6Label = label.new(time(ResolutionD )[0], H6SeriesD , "H6 Rev " + tostring(round(H6SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=H6ColorD , textcolor=H6ColorD , size=size.small)
+            
+            L5Label = label.new(time(ResolutionD )[0], L5SeriesD , "L5 Rev " + tostring(round(L5SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L5ColorD , textcolor=L5ColorD , size=size.small)
+            L6Label = label.new(time(ResolutionD )[0], L6SeriesD , "L6 Rev " + tostring(round(L6SeriesD *100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=L6ColorD , textcolor=L6ColorD , size=size.small)
+
+
+// // Targetzones & Buy/Sell Zones
+// fill(R2PlotMN, M4PlotMN, color=TargetZonesMN, editable=false, transp=ShowTargetZonesMN ? 90 : 100)
+// fill(S2PlotMN, M1PlotMN, color=TargetZonesMN, editable=false, transp=ShowTargetZonesMN ? 90 : 100)
+// fill(PPPlotMN, M2PlotMN, color=BuyZonesMN, editable=false, transp=ShowZonesMN ? 90 : 100)
+// fill(PPPlotMN, M3PlotMN, color=SellZonesMN, editable=false, transp=ShowZonesMN ? 90 : 100)
+
+
+// Alerts
+CondMonthlyBreakout = crossover(close, H4SeriesMN) or crossunder(close, L4SeriesMN)
+CondWeeklyBreakout  = crossover(close, H4SeriesWK) or crossunder(close, L4SeriesWK)
+CondDailyBreakout   = crossover(close, H4SeriesD ) or crossunder(close, L4SeriesD )
+
+CondMonthlyReversal = crossover(close, H5SeriesMN) or crossover(close, H6SeriesMN) or crossunder(close, L5SeriesMN) or crossunder(close, L6SeriesMN)
+CondWeeklyReversal  = crossover(close, H5SeriesWK) or crossover(close, H6SeriesWK) or crossunder(close, L5SeriesWK) or crossunder(close, L6SeriesWK)
+CondDailyReversal   = crossover(close, H5SeriesD ) or crossover(close, H6SeriesD ) or crossunder(close, L5SeriesD ) or crossunder(close, L6SeriesD )
+
+alertcondition(condition=CondMonthlyBreakout, title="Monthly Breakout Level Reached", message="[Monthly Breakout] Level Reached for Entry")
+alertcondition(condition=CondWeeklyBreakout, title="Weekly Breakout Level Reached", message="[Weekly Breakout] Level Reached for Entry")
+alertcondition(condition=CondDailyBreakout, title="Daily Breakout Level Reached", message="[Daily Breakout] Level Reached for Entry")
+
+alertcondition(condition=CondMonthlyReversal, title="Monthly Reversal Level Reached", message="[Monthly Reversal] Level Reached for Entry")
+alertcondition(condition=CondWeeklyReversal, title="Weekly Reversal Level Reached", message="[Weekly Reversal] Level Reached for Entry")
+alertcondition(condition=CondDailyReversal, title="Daily Reversal Level Reached", message="[Daily Reversal] Level Reached for Entry")
+
+
+
+
+
+>>>>>>> 5994629f4ad4d302d3bcba9406d043f562ea6a34

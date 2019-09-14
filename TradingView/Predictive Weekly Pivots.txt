@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //@version=4
 
 // @author Pascal Weber
@@ -329,3 +330,336 @@ alertcondition(condition=crossover(high, M4SeriesWK), title="Take Profit Zone fo
 
 
 
+=======
+//@version=4
+
+// @author Pascal Weber
+
+study(title="Pivot Points Weekly Advanced", shorttitle="Pivots WK Adv", overlay=true)
+
+
+// Input
+ColorTheme         = input(defval="Dark", title = "Color Theme", options = ["Dark", "Light"])
+ShowPivotLabelsWK  = input(defval=true, title = "Show Weekly Pivot Labels", type=input.bool)
+ShowPivotPricesWK  = input(defval=false, title = "Show Weekly Pivot Prices", type=input.bool)
+ShowTargetZonesWK  = input(defval=true, title = "Show Weekly Target Zones", type=input.bool)
+PlotHistoryWK      = input(defval=false, title = "Plot Weekly History Pivots", type=input.bool)
+
+string ResolutionWK = "W"
+
+
+// Calculation
+IsNewBarWK() =>
+    change(time(ResolutionWK)) == 0 ? false : true
+
+openWK  = security(syminfo.tickerid, ResolutionWK, open[1])
+
+PPColorW1          = (ColorTheme == "Dark" ? color.white : color.black)
+ResColorW1         = (ColorTheme == "Dark" ? color.red : color.red)
+SupColorW1         = (ColorTheme == "Dark" ? color.green : color.green)
+MidResColorW1      = (ColorTheme == "Dark" ? color.red : color.red)
+MidSupColorW1      = (ColorTheme == "Dark" ? color.green : color.green)
+TargetZonesLongW1  = (ColorTheme == "Dark" ? color.red : color.red)
+TargetZonesShortW1 = (ColorTheme == "Dark" ? color.green : color.green)
+
+PPColorWK          = openWK != openWK[1] ? na : PPColorW1
+ResColorWK         = openWK != openWK[1] ? na : ResColorW1
+SupColorWK         = openWK != openWK[1] ? na : SupColorW1
+MidResColorWK      = openWK != openWK[1] ? na : MidResColorW1
+MidSupColorWK      = openWK != openWK[1] ? na : MidSupColorW1
+TargetZonesLongWK  = openWK != openWK[1] ? na : TargetZonesLongW1
+TargetZonesShortWK = openWK != openWK[1] ? na : TargetZonesShortW1
+
+int LineWidth    = 3
+int LineWidthSec = 2
+
+PP  = (high+low+close)/3.0
+
+R1  = 2*PP-low
+R2  = PP+(high-low)
+R3  = 2*PP + high - 2*low
+
+S1  = 2*PP-high
+S2  = PP-(high-low)
+S3  = 2*PP - 2*high + low
+
+M0  = 0.5*(S2+S3)
+M1  = 0.5*(S1+S2)
+M2  = 0.5*(PP+S1)
+M3  = 0.5*(PP+R1)
+M4  = 0.5*(R1+R2)
+M5  = 0.5*(R2+R3)
+
+PPSeriesWK = security(syminfo.tickerid, ResolutionWK, PP[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+R1SeriesWK = security(syminfo.tickerid, ResolutionWK, R1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+R2SeriesWK = security(syminfo.tickerid, ResolutionWK, R2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+R3SeriesWK = security(syminfo.tickerid, ResolutionWK, R3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+S1SeriesWK = security(syminfo.tickerid, ResolutionWK, S1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+S2SeriesWK = security(syminfo.tickerid, ResolutionWK, S2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+S3SeriesWK = security(syminfo.tickerid, ResolutionWK, S3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+M0SeriesWK = security(syminfo.tickerid, ResolutionWK, M0[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M1SeriesWK = security(syminfo.tickerid, ResolutionWK, M1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M2SeriesWK = security(syminfo.tickerid, ResolutionWK, M2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M3SeriesWK = security(syminfo.tickerid, ResolutionWK, M3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M4SeriesWK = security(syminfo.tickerid, ResolutionWK, M4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+M5SeriesWK = security(syminfo.tickerid, ResolutionWK, M5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+
+
+// Plot History Lines
+PPPlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : PPSeriesWK) : na, color=PPColorWK, linewidth=LineWidth, editable=false, offset=1)
+
+R1PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : R1SeriesWK) : na, color=ResColorWK, linewidth=LineWidth, editable=false, offset=1)
+R2PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : R2SeriesWK) : na, color=ResColorWK, linewidth=LineWidth, editable=false, offset=1)
+R3PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : R3SeriesWK) : na, color=ResColorWK, linewidth=LineWidth, editable=false, offset=1)
+
+S1PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : S1SeriesWK) : na, color=SupColorWK, linewidth=LineWidth, editable=false, offset=1)
+S2PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : S2SeriesWK) : na, color=SupColorWK, linewidth=LineWidth, editable=false, offset=1)
+S3PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : S3SeriesWK) : na, color=SupColorWK, linewidth=LineWidth, editable=false, offset=1)
+
+M0PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : M0SeriesWK) : na, color=MidSupColorWK, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M1PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : M1SeriesWK) : na, color=MidSupColorWK, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M2PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : M2SeriesWK) : na, color=MidSupColorWK, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M3PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : M3SeriesWK) : na, color=MidResColorWK, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M4PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : M4SeriesWK) : na, color=MidResColorWK, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+M5PlotWK = plot(PlotHistoryWK ? (barstate.isrealtime ? na : M5SeriesWK) : na, color=MidResColorWK, linewidth=LineWidthSec, style=plot.style_linebr, editable=false, offset=1)
+
+
+// Plot Future Lines Dynamically
+PPSeriesFutureWK = security(syminfo.tickerid, ResolutionWK, PP[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+R1SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, R1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+R2SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, R2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+R3SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, R3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+S1SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, S1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+S2SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, S2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+S3SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, S3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+M0SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, M0[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M1SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, M1[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M2SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, M2[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M3SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, M3[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M4SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, M4[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+M5SeriesFutureWK = security(syminfo.tickerid, ResolutionWK, M5[0], gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+PPLineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, PPSeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, PPSeriesFutureWK, xloc=xloc.bar_time, color=PPColorW1, width=LineWidth, style=line.style_solid)
+
+R1LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R1SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, R1SeriesFutureWK, xloc=xloc.bar_time, color=ResColorW1, width=LineWidth, style=line.style_solid)
+R2LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R2SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, R2SeriesFutureWK, xloc=xloc.bar_time, color=ResColorW1, width=LineWidth, style=line.style_solid)
+R3LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R3SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, R3SeriesFutureWK, xloc=xloc.bar_time, color=ResColorW1, width=LineWidth, style=line.style_solid)
+
+S1LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S1SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, S1SeriesFutureWK, xloc=xloc.bar_time, color=SupColorW1, width=LineWidth, style=line.style_solid)
+S2LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S2SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, S2SeriesFutureWK, xloc=xloc.bar_time, color=SupColorW1, width=LineWidth, style=line.style_solid)
+S3LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S3SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, S3SeriesFutureWK, xloc=xloc.bar_time, color=SupColorW1, width=LineWidth, style=line.style_solid)
+
+M0LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, M0SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, M0SeriesFutureWK, xloc=xloc.bar_time, color=MidSupColorW1, width=LineWidthSec, style=line.style_dashed)
+M1LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, M1SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, M1SeriesFutureWK, xloc=xloc.bar_time, color=MidSupColorW1, width=LineWidthSec, style=line.style_dashed)
+M2LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, M2SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, M2SeriesFutureWK, xloc=xloc.bar_time, color=MidSupColorW1, width=LineWidthSec, style=line.style_dashed)
+M3LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, M3SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, M3SeriesFutureWK, xloc=xloc.bar_time, color=MidResColorW1, width=LineWidthSec, style=line.style_dashed)
+M4LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, M4SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, M4SeriesFutureWK, xloc=xloc.bar_time, color=MidResColorW1, width=LineWidthSec, style=line.style_dashed)
+M5LineFutureWK = line.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, M5SeriesFutureWK, time(ResolutionWK)[0] + 10080 * 60 * 1000 * 2, M5SeriesFutureWK, xloc=xloc.bar_time, color=MidResColorW1, width=LineWidthSec, style=line.style_dashed)
+
+line.delete(PPLineFutureWK[1])
+line.delete(R1LineFutureWK[1])
+line.delete(R2LineFutureWK[1])
+line.delete(R3LineFutureWK[1])
+line.delete(S1LineFutureWK[1])
+line.delete(S2LineFutureWK[1])
+line.delete(S3LineFutureWK[1])
+line.delete(M0LineFutureWK[1])
+line.delete(M1LineFutureWK[1])
+line.delete(M2LineFutureWK[1])
+line.delete(M3LineFutureWK[1])
+line.delete(M4LineFutureWK[1])
+line.delete(M5LineFutureWK[1])
+
+
+// Extend Current Lines
+if (IsNewBarWK())
+    PPLineWK = line.new(time(ResolutionWK)[0], PPSeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, PPSeriesWK, xloc=xloc.bar_time, color=PPColorW1, width=LineWidth, style=line.style_solid)
+    
+    R1LineWK = line.new(time(ResolutionWK)[0], R1SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, R1SeriesWK, xloc=xloc.bar_time, color=ResColorW1, width=LineWidth, style=line.style_solid)
+    R2LineWK = line.new(time(ResolutionWK)[0], R2SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, R2SeriesWK, xloc=xloc.bar_time, color=ResColorW1, width=LineWidth, style=line.style_solid)
+    R3LineWK = line.new(time(ResolutionWK)[0], R3SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, R3SeriesWK, xloc=xloc.bar_time, color=ResColorW1, width=LineWidth, style=line.style_solid)
+    
+    S1LineWK = line.new(time(ResolutionWK)[0], S1SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, S1SeriesWK, xloc=xloc.bar_time, color=SupColorW1, width=LineWidth, style=line.style_solid)
+    S2LineWK = line.new(time(ResolutionWK)[0], S2SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, S2SeriesWK, xloc=xloc.bar_time, color=SupColorW1, width=LineWidth, style=line.style_solid)
+    S3LineWK = line.new(time(ResolutionWK)[0], S3SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, S3SeriesWK, xloc=xloc.bar_time, color=SupColorW1, width=LineWidth, style=line.style_solid)
+    
+    M0LineWK = line.new(time(ResolutionWK)[0], M0SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, M0SeriesWK, xloc=xloc.bar_time, color=MidSupColorW1, width=LineWidthSec, style=line.style_dashed)
+    M1LineWK = line.new(time(ResolutionWK)[0], M1SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, M1SeriesWK, xloc=xloc.bar_time, color=MidSupColorW1, width=LineWidthSec, style=line.style_dashed)
+    M2LineWK = line.new(time(ResolutionWK)[0], M2SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, M2SeriesWK, xloc=xloc.bar_time, color=MidSupColorW1, width=LineWidthSec, style=line.style_dashed)
+    M3LineWK = line.new(time(ResolutionWK)[0], M3SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, M3SeriesWK, xloc=xloc.bar_time, color=MidResColorW1, width=LineWidthSec, style=line.style_dashed)
+    M4LineWK = line.new(time(ResolutionWK)[0], M4SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, M4SeriesWK, xloc=xloc.bar_time, color=MidResColorW1, width=LineWidthSec, style=line.style_dashed)
+    M5LineWK = line.new(time(ResolutionWK)[0], M5SeriesWK, time(ResolutionWK)[0] + 10080 * 60 * 1000, M5SeriesWK, xloc=xloc.bar_time, color=MidResColorW1, width=LineWidthSec, style=line.style_dashed)
+    
+    line.delete(PPLineWK[1])
+    line.delete(R1LineWK[1])
+    line.delete(R2LineWK[1])
+    line.delete(R3LineWK[1])
+    line.delete(S1LineWK[1])
+    line.delete(S2LineWK[1])
+    line.delete(S3LineWK[1])
+    line.delete(M0LineWK[1])
+    line.delete(M1LineWK[1])
+    line.delete(M2LineWK[1])
+    line.delete(M3LineWK[1])
+    line.delete(M4LineWK[1])
+    line.delete(M5LineWK[1])
+
+
+// Labels
+if (ShowPivotLabelsWK and not ShowPivotPricesWK)
+    PPLabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, PPSeriesFutureWK, "P", xloc=xloc.bar_time, style=label.style_none, color=PPColorWK, textcolor=PPColorWK, size=size.normal)
+            
+    R1LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R1SeriesFutureWK, "R1", xloc=xloc.bar_time, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+    R2LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R2SeriesFutureWK, "R2", xloc=xloc.bar_time, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+    R3LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R3SeriesFutureWK, "R3", xloc=xloc.bar_time, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+    
+    S1LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S1SeriesFutureWK, "S1", xloc=xloc.bar_time, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+    S2LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S2SeriesFutureWK, "S2", xloc=xloc.bar_time, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+    S3LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S3SeriesFutureWK, "S3", xloc=xloc.bar_time, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+    
+    label.delete(PPLabelFutureWK[1])
+    
+    label.delete(R1LabelFutureWK[1])
+    label.delete(R2LabelFutureWK[1])
+    label.delete(R3LabelFutureWK[1])
+    
+    label.delete(S1LabelFutureWK[1])
+    label.delete(S2LabelFutureWK[1])
+    label.delete(S3LabelFutureWK[1])
+
+
+if (ShowPivotPricesWK and not ShowPivotLabelsWK)
+    PPLabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, PPSeriesFutureWK, tostring(round(PPSeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=PPColorWK, textcolor=PPColorWK, size=size.normal)
+    
+    R1LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R1SeriesFutureWK, tostring(round(R1SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+    R2LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R2SeriesFutureWK, tostring(round(R2SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+    R3LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R3SeriesFutureWK, tostring(round(R3SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+    
+    S1LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S1SeriesFutureWK, tostring(round(S1SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+    S2LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S2SeriesFutureWK, tostring(round(S2SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+    S3LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S3SeriesFutureWK, tostring(round(S3SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+    
+    label.delete(PPLabelFutureWK[1])
+    
+    label.delete(R1LabelFutureWK[1])
+    label.delete(R2LabelFutureWK[1])
+    label.delete(R3LabelFutureWK[1])
+    
+    label.delete(S1LabelFutureWK[1])
+    label.delete(S2LabelFutureWK[1])
+    label.delete(S3LabelFutureWK[1])
+
+
+if (ShowPivotPricesWK and ShowPivotLabelsWK)
+    PPLabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, PPSeriesFutureWK, "P " + tostring(round(PPSeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=PPColorWK, textcolor=PPColorWK, size=size.normal)
+    
+    R1LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R1SeriesFutureWK, "R1 " + tostring(round(R1SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+    R2LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R2SeriesFutureWK, "R2 " + tostring(round(R2SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+    R3LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, R3SeriesFutureWK, "R3 " + tostring(round(R3SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+    
+    S1LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S1SeriesFutureWK, "S1 " + tostring(round(S1SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+    S2LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S2SeriesFutureWK, "S2 " + tostring(round(S2SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+    S3LabelFutureWK = label.new(time(ResolutionWK)[0] + 10080 * 60 * 1000, S3SeriesFutureWK, "S3 " + tostring(round(S3SeriesFutureWK*100000)/100000), xloc=xloc.bar_time, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+    
+    label.delete(PPLabelFutureWK[1])
+    
+    label.delete(R1LabelFutureWK[1])
+    label.delete(R2LabelFutureWK[1])
+    label.delete(R3LabelFutureWK[1])
+    
+    label.delete(S1LabelFutureWK[1])
+    label.delete(S2LabelFutureWK[1])
+    label.delete(S3LabelFutureWK[1])
+
+
+if (IsNewBarWK())
+    if (ShowPivotLabelsWK and not ShowPivotPricesWK)
+        PPLabel = label.new(time(ResolutionWK)[0], PPSeriesWK, "P", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=PPColorWK, textcolor=PPColorWK, size=size.normal)
+        
+        R1Label = label.new(time(ResolutionWK)[0], R1SeriesWK, "R1", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+        R2Label = label.new(time(ResolutionWK)[0], R2SeriesWK, "R2", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+        R3Label = label.new(time(ResolutionWK)[0], R3SeriesWK, "R3", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+        
+        S1Label = label.new(time(ResolutionWK)[0], S1SeriesWK, "S1", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+        S2Label = label.new(time(ResolutionWK)[0], S2SeriesWK, "S2", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+        S3Label = label.new(time(ResolutionWK)[0], S3SeriesWK, "S3", xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+        
+        if (not PlotHistoryWK)
+            label.delete(PPLabel[1])
+            
+            label.delete(R1Label[1])
+            label.delete(R2Label[1])
+            label.delete(R3Label[1])
+            
+            label.delete(S1Label[1])
+            label.delete(S2Label[1])
+            label.delete(S3Label[1])
+    
+    
+    if (ShowPivotPricesWK and not ShowPivotLabelsWK)
+        PPLabel = label.new(time(ResolutionWK)[0], PPSeriesWK, tostring(round(PPSeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=PPColorWK, textcolor=PPColorWK, size=size.normal)
+        
+        R1Label = label.new(time(ResolutionWK)[0], R1SeriesWK, tostring(round(R1SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+        R2Label = label.new(time(ResolutionWK)[0], R2SeriesWK, tostring(round(R2SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+        R3Label = label.new(time(ResolutionWK)[0], R3SeriesWK, tostring(round(R3SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+        
+        S1Label = label.new(time(ResolutionWK)[0], S1SeriesWK, tostring(round(S1SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+        S2Label = label.new(time(ResolutionWK)[0], S2SeriesWK, tostring(round(S2SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+        S3Label = label.new(time(ResolutionWK)[0], S3SeriesWK, tostring(round(S3SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+        
+        if (not PlotHistoryWK)
+            label.delete(PPLabel[1])
+            
+            label.delete(R1Label[1])
+            label.delete(R2Label[1])
+            label.delete(R3Label[1])
+            
+            label.delete(S1Label[1])
+            label.delete(S2Label[1])
+            label.delete(S3Label[1])
+    
+    
+    if (ShowPivotPricesWK and ShowPivotLabelsWK)
+        PPLabel = label.new(time(ResolutionWK)[0], PPSeriesWK, "P " + tostring(round(PPSeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=PPColorWK, textcolor=PPColorWK, size=size.normal)
+        
+        R1Label = label.new(time(ResolutionWK)[0], R1SeriesWK, "R1 " + tostring(round(R1SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+        R2Label = label.new(time(ResolutionWK)[0], R2SeriesWK, "R2 " + tostring(round(R2SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+        R3Label = label.new(time(ResolutionWK)[0], R3SeriesWK, "R3 " + tostring(round(R3SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=ResColorWK, textcolor=ResColorWK, size=size.normal)
+        
+        S1Label = label.new(time(ResolutionWK)[0], S1SeriesWK, "S1 " + tostring(round(S1SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+        S2Label = label.new(time(ResolutionWK)[0], S2SeriesWK, "S2 " + tostring(round(S2SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+        S3Label = label.new(time(ResolutionWK)[0], S3SeriesWK, "S3 " + tostring(round(S3SeriesWK*100000)/100000), xloc=xloc.bar_time, yloc=yloc.price, style=label.style_none, color=SupColorWK, textcolor=SupColorWK, size=size.normal)
+        
+        if (not PlotHistoryWK)
+            label.delete(PPLabel[1])
+            
+            label.delete(R1Label[1])
+            label.delete(R2Label[1])
+            label.delete(R3Label[1])
+            
+            label.delete(S1Label[1])
+            label.delete(S2Label[1])
+            label.delete(S3Label[1])
+
+
+// Target Zones
+fill(R2PlotWK, M4PlotWK, color=TargetZonesLongWK, editable=false, transp=ShowTargetZonesWK ? 90 : 100)
+fill(S2PlotWK, M1PlotWK, color=TargetZonesShortWK, editable=false, transp=ShowTargetZonesWK ? 90 : 100)
+
+
+// Alerts
+alertcondition(condition=crossunder(low, M1SeriesWK), title="Take Profit Zone for Weekly Shorts", message="[Take Profit] Reached the Weekly Take Profit Zone for Short Positions")
+alertcondition(condition=crossover(high, M4SeriesWK), title="Take Profit Zone for Weekly Longs", message="[Take Profit] Reached the Weekly Take Profit Zone for Long Positions")
+
+
+
+
+
+
+>>>>>>> 5994629f4ad4d302d3bcba9406d043f562ea6a34

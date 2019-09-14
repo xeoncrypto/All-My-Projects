@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //@version=4
 
 // @author Pascal Weber
@@ -154,3 +155,161 @@ plotshape(ema3_18, style=shape.cross, location=location.absolute, color=EMA3Colo
 plotshape(ema3_19, style=shape.cross, location=location.absolute, color=EMA3Color, offset=19, size=size.tiny, editable=false, show_last=1)
 plotshape(ema3_20, style=shape.cross, location=location.absolute, color=EMA3Color, offset=20, size=size.tiny, editable=false, show_last=1)
 plotshape(ema3_21, style=shape.cross, location=location.absolute, color=EMA3Color, offset=21, size=size.tiny, editable=false, show_last=1)
+=======
+//@version=4
+
+// @author Pascal Weber
+study(title = "Predictive EMAs", shorttitle = "Pred EMAs", overlay = true)
+
+
+// Input
+AdditionalEMA1  = input(21, minval=2, title="First EMA")
+AdditionalEMA2  = input(55, minval=2, title="Second EMA")
+AdditionalEMA3  = input(100, minval=2, title="Third EMA")
+
+EMA1Color = color.green
+EMA2Color = color.blue
+EMA3Color = color.silver
+
+
+// EMAs
+alpha1 = 2 / (AdditionalEMA1 + 1)
+ema1_0  = ema(close, AdditionalEMA1)
+ema1_1  = (close - ema1_0) * alpha1 + ema1_0
+ema1_2  = (close - ema1_1) * alpha1 + ema1_1
+ema1_3  = (close - ema1_2) * alpha1 + ema1_2
+ema1_4  = (close - ema1_3) * alpha1 + ema1_3
+ema1_5  = (close - ema1_4) * alpha1 + ema1_4
+ema1_6  = (close - ema1_5) * alpha1 + ema1_5
+ema1_7  = (close - ema1_6) * alpha1 + ema1_6
+ema1_8  = (close - ema1_7) * alpha1 + ema1_7
+ema1_9  = (close - ema1_8) * alpha1 + ema1_8
+ema1_10 = (close - ema1_9) * alpha1 + ema1_9
+ema1_11 = (close - ema1_10) * alpha1 + ema1_10
+ema1_12 = (close - ema1_11) * alpha1 + ema1_11
+ema1_13 = (close - ema1_12) * alpha1 + ema1_12
+ema1_14 = (close - ema1_13) * alpha1 + ema1_13
+ema1_15 = (close - ema1_14) * alpha1 + ema1_14
+ema1_16 = (close - ema1_15) * alpha1 + ema1_15
+ema1_17 = (close - ema1_16) * alpha1 + ema1_16
+ema1_18 = (close - ema1_17) * alpha1 + ema1_17
+ema1_19 = (close - ema1_18) * alpha1 + ema1_18
+ema1_20 = (close - ema1_19) * alpha1 + ema1_19
+ema1_21 = (close - ema1_20) * alpha1 + ema1_20
+
+alpha2 = 2 / (AdditionalEMA2 + 1)
+ema2_0  = ema(close, AdditionalEMA2)
+ema2_1  = (close - ema2_0) * alpha2 + ema2_0
+ema2_2  = (close - ema2_1) * alpha2 + ema2_1
+ema2_3  = (close - ema2_2) * alpha2 + ema2_2
+ema2_4  = (close - ema2_3) * alpha2 + ema2_3
+ema2_5  = (close - ema2_4) * alpha2 + ema2_4
+ema2_6  = (close - ema2_5) * alpha2 + ema2_5
+ema2_7  = (close - ema2_6) * alpha2 + ema2_6
+ema2_8  = (close - ema2_7) * alpha2 + ema2_7
+ema2_9  = (close - ema2_8) * alpha2 + ema2_8
+ema2_10 = (close - ema2_9) * alpha2 + ema2_9
+ema2_11 = (close - ema2_10) * alpha2 + ema2_10
+ema2_12 = (close - ema2_11) * alpha2 + ema2_11
+ema2_13 = (close - ema2_12) * alpha2 + ema2_12
+ema2_14 = (close - ema2_13) * alpha2 + ema2_13
+ema2_15 = (close - ema2_14) * alpha2 + ema2_14
+ema2_16 = (close - ema2_15) * alpha2 + ema2_15
+ema2_17 = (close - ema2_16) * alpha2 + ema2_16
+ema2_18 = (close - ema2_17) * alpha2 + ema2_17
+ema2_19 = (close - ema2_18) * alpha2 + ema2_18
+ema2_20 = (close - ema2_19) * alpha2 + ema2_19
+ema2_21 = (close - ema2_20) * alpha2 + ema2_20
+
+alpha3 = 2 / (AdditionalEMA3 + 1)
+ema3_0  = ema(close, AdditionalEMA3)
+ema3_1  = (close - ema3_0) * alpha3 + ema3_0
+ema3_2  = (close - ema3_1) * alpha3 + ema3_1
+ema3_3  = (close - ema3_2) * alpha3 + ema3_2
+ema3_4  = (close - ema3_3) * alpha3 + ema3_3
+ema3_5  = (close - ema3_4) * alpha3 + ema3_4
+ema3_6  = (close - ema3_5) * alpha3 + ema3_5
+ema3_7  = (close - ema3_6) * alpha3 + ema3_6
+ema3_8  = (close - ema3_7) * alpha3 + ema3_7
+ema3_9  = (close - ema3_8) * alpha3 + ema3_8
+ema3_10 = (close - ema3_9) * alpha3 + ema3_9
+ema3_11 = (close - ema3_10) * alpha3 + ema3_10
+ema3_12 = (close - ema3_11) * alpha3 + ema3_11
+ema3_13 = (close - ema3_12) * alpha3 + ema3_12
+ema3_14 = (close - ema3_13) * alpha3 + ema3_13
+ema3_15 = (close - ema3_14) * alpha3 + ema3_14
+ema3_16 = (close - ema3_15) * alpha3 + ema3_15
+ema3_17 = (close - ema3_16) * alpha3 + ema3_16
+ema3_18 = (close - ema3_17) * alpha3 + ema3_17
+ema3_19 = (close - ema3_18) * alpha3 + ema3_18
+ema3_20 = (close - ema3_19) * alpha3 + ema3_19
+ema3_21 = (close - ema3_20) * alpha3 + ema3_20
+
+
+// Plot EMA Ribbon
+plotshape(ema1_1, style=shape.cross, location=location.absolute, color=EMA1Color, offset=1, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_2, style=shape.cross, location=location.absolute, color=EMA1Color, offset=2, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_3, style=shape.cross, location=location.absolute, color=EMA1Color, offset=3, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_4, style=shape.cross, location=location.absolute, color=EMA1Color, offset=4, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_5, style=shape.cross, location=location.absolute, color=EMA1Color, offset=5, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_6, style=shape.cross, location=location.absolute, color=EMA1Color, offset=6, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_7, style=shape.cross, location=location.absolute, color=EMA1Color, offset=7, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_8, style=shape.cross, location=location.absolute, color=EMA1Color, offset=8, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_9, style=shape.cross, location=location.absolute, color=EMA1Color, offset=9, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_10, style=shape.cross, location=location.absolute, color=EMA1Color, offset=10, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_11, style=shape.cross, location=location.absolute, color=EMA1Color, offset=11, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_12, style=shape.cross, location=location.absolute, color=EMA1Color, offset=12, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_13, style=shape.cross, location=location.absolute, color=EMA1Color, offset=13, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_14, style=shape.cross, location=location.absolute, color=EMA1Color, offset=14, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_15, style=shape.cross, location=location.absolute, color=EMA1Color, offset=15, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_16, style=shape.cross, location=location.absolute, color=EMA1Color, offset=16, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_17, style=shape.cross, location=location.absolute, color=EMA1Color, offset=17, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_18, style=shape.cross, location=location.absolute, color=EMA1Color, offset=18, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_19, style=shape.cross, location=location.absolute, color=EMA1Color, offset=19, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_20, style=shape.cross, location=location.absolute, color=EMA1Color, offset=20, size=size.tiny, editable=false, show_last=1)
+plotshape(ema1_21, style=shape.cross, location=location.absolute, color=EMA1Color, offset=21, size=size.tiny, editable=false, show_last=1)
+
+plotshape(ema2_1,  style=shape.cross, location=location.absolute, color=EMA2Color, offset=1, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_2,  style=shape.cross, location=location.absolute, color=EMA2Color, offset=2, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_3,  style=shape.cross, location=location.absolute, color=EMA2Color, offset=3, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_4,  style=shape.cross, location=location.absolute, color=EMA2Color, offset=4, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_5,  style=shape.cross, location=location.absolute, color=EMA2Color, offset=5, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_6,  style=shape.cross, location=location.absolute, color=EMA2Color, offset=6, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_7,  style=shape.cross, location=location.absolute, color=EMA2Color, offset=7, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_8,  style=shape.cross, location=location.absolute, color=EMA2Color, offset=8, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_9,  style=shape.cross, location=location.absolute, color=EMA2Color, offset=9, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_10, style=shape.cross, location=location.absolute, color=EMA2Color, offset=10, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_11, style=shape.cross, location=location.absolute, color=EMA2Color, offset=11, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_12, style=shape.cross, location=location.absolute, color=EMA2Color, offset=12, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_13, style=shape.cross, location=location.absolute, color=EMA2Color, offset=13, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_14, style=shape.cross, location=location.absolute, color=EMA2Color, offset=14, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_15, style=shape.cross, location=location.absolute, color=EMA2Color, offset=15, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_16, style=shape.cross, location=location.absolute, color=EMA2Color, offset=16, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_17, style=shape.cross, location=location.absolute, color=EMA2Color, offset=17, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_18, style=shape.cross, location=location.absolute, color=EMA2Color, offset=18, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_19, style=shape.cross, location=location.absolute, color=EMA2Color, offset=19, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_20, style=shape.cross, location=location.absolute, color=EMA2Color, offset=20, size=size.tiny, editable=false, show_last=1)
+plotshape(ema2_21, style=shape.cross, location=location.absolute, color=EMA2Color, offset=21, size=size.tiny, editable=false, show_last=1)
+
+plotshape(ema3_1, style=shape.cross, location=location.absolute, color=EMA3Color, offset=1, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_2, style=shape.cross, location=location.absolute, color=EMA3Color, offset=2, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_3, style=shape.cross, location=location.absolute, color=EMA3Color, offset=3, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_4, style=shape.cross, location=location.absolute, color=EMA3Color, offset=4, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_5, style=shape.cross, location=location.absolute, color=EMA3Color, offset=5, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_6, style=shape.cross, location=location.absolute, color=EMA3Color, offset=6, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_7, style=shape.cross, location=location.absolute, color=EMA3Color, offset=7, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_8, style=shape.cross, location=location.absolute, color=EMA3Color, offset=8, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_9, style=shape.cross, location=location.absolute, color=EMA3Color, offset=9, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_10, style=shape.cross, location=location.absolute, color=EMA3Color, offset=10, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_11, style=shape.cross, location=location.absolute, color=EMA3Color, offset=11, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_12, style=shape.cross, location=location.absolute, color=EMA3Color, offset=12, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_13, style=shape.cross, location=location.absolute, color=EMA3Color, offset=13, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_14, style=shape.cross, location=location.absolute, color=EMA3Color, offset=14, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_15, style=shape.cross, location=location.absolute, color=EMA3Color, offset=15, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_16, style=shape.cross, location=location.absolute, color=EMA3Color, offset=16, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_17, style=shape.cross, location=location.absolute, color=EMA3Color, offset=17, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_18, style=shape.cross, location=location.absolute, color=EMA3Color, offset=18, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_19, style=shape.cross, location=location.absolute, color=EMA3Color, offset=19, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_20, style=shape.cross, location=location.absolute, color=EMA3Color, offset=20, size=size.tiny, editable=false, show_last=1)
+plotshape(ema3_21, style=shape.cross, location=location.absolute, color=EMA3Color, offset=21, size=size.tiny, editable=false, show_last=1)
+>>>>>>> 5994629f4ad4d302d3bcba9406d043f562ea6a34
