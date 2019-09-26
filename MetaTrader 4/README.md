@@ -4,7 +4,7 @@ This Folder includes all of my Indicators for MetaTrader 4 Platform
 ## Candlestick Patterns
 An indicator and Expert Advisor for checking common candlestick patterns such as Doji, Engulfing candles and Hammer.
 
-## QUAD EMA
+## Quad EMA
 An Expert Advisor which enters the market based on 4 EMAs and Candlestick Patterns. It then manages and closes the positions.
 
 ## Swap Display
